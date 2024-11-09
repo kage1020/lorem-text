@@ -25,6 +25,6 @@ routes = [{ pattern = "random.kage1020.com", custom_domain = true }]
 # [ai]
 # binding = "AI"
 
-# [observability]
-# enabled = true
-# head_sampling_rate = 1
+[observability]
+enabled = true
+head_sampling_rate = 1
