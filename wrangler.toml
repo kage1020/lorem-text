@@ -1,8 +1,10 @@
-name = "lorem-hoge"
+name = "lorem-text"
 main = "src/index.ts"
 compatibility_date = "2024-11-09"
 
-compatibility_flags = [ "nodejs_compat" ]
+compatibility_flags = ["nodejs_compat"]
+
+routes = [{ pattern = "random.kage1020.com", custom_domain = true }]
 
 # [vars]
 # MY_VAR = "my-variable"

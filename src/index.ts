@@ -51,82 +51,76 @@ const app = new Hono();
 
 app.get('/', (c) => {
   return c.json({
-    random: '/random',
+    number: '/number/:length',
+    alphabet: '/alphabet/:length',
+    alphaUpper: '/alphaUpper/:length',
+    alphaLower: '/alphaLower/:length',
+    alphaNumeric: '/alphaNumeric/:length',
+    alphaNumericUpper: '/alphaNumericUpper/:length',
+    alphaNumericLower: '/alphaNumericLower/:length',
+    symbol: '/symbol/:length',
+    alphaNumericSymbol: '/alphaNumericSymbol/:length',
+    alphaNumericSymbolUpper: '/alphaNumericSymbolUpper/:length',
+    alphaNumericSymbolLower: '/alphaNumericSymbolLower/:length',
+    hiragana: '/hiragana/:length',
+    katakana: '/katakana/:length',
+    kanji: '/kanji/:length',
+    kanji2: '/kanji2/:length',
+    japanese: '/japanese/:length',
+    lorem: '/lorem/:length',
+    author: '/:author/:length',
   });
 });
 
-app.get('/random', (c) => {
-  return c.json({
-    number: '/random/number/:length',
-    alphabet: '/random/alphabet/:length',
-    alphaUpper: '/random/alphaUpper/:length',
-    alphaLower: '/random/alphaLower/:length',
-    alphaNumeric: '/random/alphaNumeric/:length',
-    alphaNumericUpper: '/random/alphaNumericUpper/:length',
-    alphaNumericLower: '/random/alphaNumericLower/:length',
-    symbol: '/random/symbol/:length',
-    alphaNumericSymbol: '/random/alphaNumericSymbol/:length',
-    alphaNumericSymbolUpper: '/random/alphaNumericSymbolUpper/:length',
-    alphaNumericSymbolLower: '/random/alphaNumericSymbolLower/:length',
-    hiragana: '/random/hiragana/:length',
-    katakana: '/random/katakana/:length',
-    kanji: '/random/kanji/:length',
-    kanji2: '/random/kanji2/:length',
-    japanese: '/random/japanese/:length',
-    lorem: '/random/lorem/:length',
-    author: '/random/:author/:length',
-  });
-});
-
-app.get('/random/number/:length', (c) => {
+app.get('/number/:length', (c) => {
   const length = parseInt(c.req.param('length'));
   const randomNumber = picker(length, NUMBER);
   return c.text(randomNumber);
 });
 
-app.get('/random/alphabet/:length', (c) => {
+app.get('/alphabet/:length', (c) => {
   const length = parseInt(c.req.param('length'));
   const randomAlphabet = picker(length, ALPHABET_UPPER + ALPHABET_LOWER);
   return c.text(randomAlphabet);
 });
 
-app.get('/random/alphaUpper/:length', (c) => {
+app.get('/alphaUpper/:length', (c) => {
   const length = parseInt(c.req.param('length'));
   const randomAlphaUpper = picker(length, ALPHABET_UPPER);
   return c.text(randomAlphaUpper);
 });
 
-app.get('/random/alphaLower/:length', (c) => {
+app.get('/alphaLower/:length', (c) => {
   const length = parseInt(c.req.param('length'));
   const randomAlphaLower = picker(length, ALPHABET_LOWER);
   return c.text(randomAlphaLower);
 });
 
-app.get('/random/alphaNumeric/:length', (c) => {
+app.get('/alphaNumeric/:length', (c) => {
   const length = parseInt(c.req.param('length'));
   const randomAlphaNumeric = picker(length, ALPHABET_UPPER + ALPHABET_LOWER + NUMBER);
   return c.text(randomAlphaNumeric);
 });
 
-app.get('/random/alphaNumericUpper/:length', (c) => {
+app.get('/alphaNumericUpper/:length', (c) => {
   const length = parseInt(c.req.param('length'));
   const randomAlphanumericUpper = picker(length, ALPHABET_UPPER + NUMBER);
   return c.text(randomAlphanumericUpper);
 });
 
-app.get('/random/alphaNumericLower/:length', (c) => {
+app.get('/alphaNumericLower/:length', (c) => {
   const length = parseInt(c.req.param('length'));
   const randomAlphaNumericLower = picker(length, ALPHABET_LOWER + NUMBER);
   return c.text(randomAlphaNumericLower);
 });
 
-app.get('/random/symbol/:length', (c) => {
+app.get('/symbol/:length', (c) => {
   const length = parseInt(c.req.param('length'));
   const randomSymbol = picker(length, SYMBOL);
   return c.text(randomSymbol);
 });
 
-app.get('/random/alphaNumericSymbol/:length', (c) => {
+app.get('/alphaNumericSymbol/:length', (c) => {
   const length = parseInt(c.req.param('length'));
   const randomAlphaNumericSymbol = picker(
     length,
@@ -135,43 +129,43 @@ app.get('/random/alphaNumericSymbol/:length', (c) => {
   return c.text(randomAlphaNumericSymbol);
 });
 
-app.get('/random/alphaNumericSymbolUpper/:length', (c) => {
+app.get('/alphaNumericSymbolUpper/:length', (c) => {
   const length = parseInt(c.req.param('length'));
   const randomAlphaNumericSymbolUpper = picker(length, ALPHABET_UPPER + NUMBER + SYMBOL);
   return c.text(randomAlphaNumericSymbolUpper);
 });
 
-app.get('/random/alphaNumericSymbolLower/:length', (c) => {
+app.get('/alphaNumericSymbolLower/:length', (c) => {
   const length = parseInt(c.req.param('length'));
   const randomAlphaNumericSymbolLower = picker(length, ALPHABET_LOWER + NUMBER + SYMBOL);
   return c.text(randomAlphaNumericSymbolLower);
 });
 
-app.get('/random/hiragana/:length', (c) => {
+app.get('/hiragana/:length', (c) => {
   const length = parseInt(c.req.param('length'));
   const randomHiragana = picker(length, HIRAGANA);
   return c.text(randomHiragana);
 });
 
-app.get('/random/katakana/:length', (c) => {
+app.get('/katakana/:length', (c) => {
   const length = parseInt(c.req.param('length'));
   const randomKatakana = picker(length, KATAKANA);
   return c.text(randomKatakana);
 });
 
-app.get('/random/kanji/:length', (c) => {
+app.get('/kanji/:length', (c) => {
   const length = parseInt(c.req.param('length'));
   const randomKanji = picker(length, KANJI1);
   return c.text(randomKanji);
 });
 
-app.get('/random/kanji2/:length', (c) => {
+app.get('/kanji2/:length', (c) => {
   const length = parseInt(c.req.param('length'));
   const randomKanji = picker(length, KANJI2);
   return c.text(randomKanji);
 });
 
-app.get('/random/japanese/:length', (c) => {
+app.get('/japanese/:length', (c) => {
   const length = parseInt(c.req.param('length'));
   const randomJapanese = picker(length, [
     { characters: HIRAGANA, ratio: 0.3 },
@@ -181,13 +175,13 @@ app.get('/random/japanese/:length', (c) => {
   return c.text(randomJapanese);
 });
 
-app.get('/random/lorem/:length', async (c) => {
+app.get('/lorem/:length', async (c) => {
   const length = parseInt(c.req.param('length'));
   const text = await getLoremText();
   return c.text(text.slice(0, length));
 });
 
-app.get('/random/:author/:length', async (c) => {
+app.get('/:author/:length', async (c) => {
   const length = parseInt(c.req.param('length'));
   const author = c.req.param('author');
   const text = await getLiteratureText(author);
