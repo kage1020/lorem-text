@@ -69,6 +69,8 @@ app.get('/', (c) => {
     japanese: '/japanese/:length',
     lorem: '/lorem/:length',
     author: '/:author/:length',
+    rsaJwk: '/rsa/jwk',
+    rsaPem: '/rsa/pem',
   });
 });
 
@@ -181,8 +183,49 @@ app.get('/lorem/:length', async (c) => {
   return c.text(text.slice(0, length));
 });
 
+app.get('/rsa/jwk', async (c) => {
+  const keyPair = (await crypto.subtle.generateKey(
+    {
+      name: 'RSA-OAEP',
+      modulusLength: 2048,
+      publicExponent: new Uint8Array([1, 0, 1]),
+      hash: 'SHA-512',
+    },
+    true,
+    ['encrypt', 'decrypt']
+  )) as CryptoKeyPair;
+  const publicKey = await crypto.subtle.exportKey('jwk', keyPair.publicKey);
+  const privateKey = await crypto.subtle.exportKey('jwk', keyPair.privateKey);
+  return c.json({ publicKey, privateKey });
+});
+
+app.get('/rsa/pem', async (c) => {
+  const keyPair = (await crypto.subtle.generateKey(
+    {
+      name: 'RSA-OAEP',
+      modulusLength: 2048,
+      publicExponent: new Uint8Array([1, 0, 1]),
+      hash: 'SHA-512',
+    },
+    true,
+    ['encrypt', 'decrypt']
+  )) as CryptoKeyPair;
+  const publicKeyBuffer = (await crypto.subtle.exportKey('spki', keyPair.publicKey)) as ArrayBuffer;
+  const publicKey = `-----BEGIN PUBLIC KEY-----
+${btoa(String.fromCharCode(...new Uint8Array(publicKeyBuffer)))}
+-----END PUBLIC KEY-----`;
+  const privateKeyBuffer = (await crypto.subtle.exportKey(
+    'pkcs8',
+    keyPair.privateKey
+  )) as ArrayBuffer;
+  const privateKey = `-----BEGIN PRIVATE KEY-----
+${btoa(String.fromCharCode(...new Uint8Array(privateKeyBuffer)))}
+-----END PRIVATE KEY-----`;
+  return c.json({ publicKey, privateKey });
+});
+
 app.get('/:author/:length', async (c) => {
-  const length = parseInt(c.req.param('length'));
+  const length = parseInt(c.req.param('length')) || 100;
   const author = c.req.param('author');
   const text = await getLiteratureText(author);
   return c.text(text.slice(0, length));
