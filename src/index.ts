@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import cuid from 'cuid';
 import {
   ALPHABET_LOWER,
   ALPHABET_UPPER,
@@ -51,6 +52,7 @@ const app = new Hono();
 
 app.get('/', (c) => {
   return c.json({
+    cuid: '/cuid',
     number: '/number/:length',
     alphabet: '/alphabet/:length',
     alphaUpper: '/alphaUpper/:length',
@@ -72,6 +74,10 @@ app.get('/', (c) => {
     rsaJwk: '/rsa/jwk',
     rsaPem: '/rsa/pem',
   });
+});
+
+app.get('/cuid', (c) => {
+  return c.text(cuid());
 });
 
 app.get('/number/:length', (c) => {
@@ -188,7 +194,7 @@ app.get('/rsa/jwk', async (c) => {
     {
       name: 'RSA-OAEP',
       modulusLength: 2048,
-      publicExponent: new Uint8Array([1, 0, 1]),
+      publicExponent: new Uint8Array([1, 0, 1]).buffer,
       hash: 'SHA-512',
     },
     true,
@@ -204,7 +210,7 @@ app.get('/rsa/pem', async (c) => {
     {
       name: 'RSA-OAEP',
       modulusLength: 2048,
-      publicExponent: new Uint8Array([1, 0, 1]),
+      publicExponent: new Uint8Array([1, 0, 1]).buffer,
       hash: 'SHA-512',
     },
     true,
