@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import cuid from 'cuid';
+import { createId as cuid2 } from '@paralleldrive/cuid2';
 import {
   ALPHABET_LOWER,
   ALPHABET_UPPER,
@@ -53,6 +54,7 @@ const app = new Hono();
 app.get('/', (c) => {
   return c.json({
     cuid: '/cuid',
+    cuid2: '/cuid2',
     number: '/number/:length',
     alphabet: '/alphabet/:length',
     alphaUpper: '/alphaUpper/:length',
@@ -78,6 +80,10 @@ app.get('/', (c) => {
 
 app.get('/cuid', (c) => {
   return c.text(cuid());
+});
+
+app.get('/cuid2', (c) => {
+  return c.text(cuid2());
 });
 
 app.get('/number/:length', (c) => {

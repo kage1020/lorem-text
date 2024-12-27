@@ -5,6 +5,7 @@
     "deploy": "wrangler deploy --minify"
   },
   "dependencies": {
+    "@paralleldrive/cuid2": "^2.2.2",
     "cuid": "^3.0.0",
     "hono": "^4.6.9"
   },
