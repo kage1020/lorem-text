@@ -4,7 +4,7 @@ import edogawa from './data/edogawa.json';
 import natsume from './data/natsume.json';
 import lorem from './data/lorem.json';
 
-export async function getLiteratureText(author: string) {
+export async function getLiteratureText(author: string, random = Math.random) {
   const segmenter = new Intl.Segmenter('ja', { granularity: 'sentence' });
 
   let text = '';
@@ -26,13 +26,13 @@ export async function getLiteratureText(author: string) {
   }
   const segments = segmenter.segment(text);
   const sentences = Array.from(segments, (segment) => segment.segment);
-  return sentences.sort(() => Math.random() - 0.5).join('');
+  return sentences.sort(() => random() - 0.5).join('');
 }
 
-export async function getLoremText() {
+export async function getLoremText(random = Math.random) {
   const segmenter = new Intl.Segmenter('en', { granularity: 'sentence' });
   const text = Object.values(lorem).join('');
   const segments = segmenter.segment(text);
   const sentences = Array.from(segments, (segment) => segment.segment);
-  return sentences.sort(() => Math.random() - 0.5).join('');
+  return sentences.sort(() => random() - 0.5).join('');
 }

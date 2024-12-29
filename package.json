@@ -7,7 +7,9 @@
   "dependencies": {
     "@paralleldrive/cuid2": "^2.2.2",
     "cuid": "^3.0.0",
-    "hono": "^4.6.9"
+    "hono": "^4.6.9",
+    "ulid": "^2.3.0",
+    "uuid": "^11.0.3"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20241022.0",
