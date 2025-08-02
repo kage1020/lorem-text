@@ -283,16 +283,19 @@ ${btoa(String.fromCharCode(...new Uint8Array(privateKeyBuffer)))}
 app.get("/person/:keys/:length", (c) => {
   const keys = c.req.param("keys").split("-")
   const length = parseInt(c.req.param("length")) || 100
-  const person = keys.reduce((acc, cur) => {
-    let characters: string[] = []
-    if (cur === "first") {
-      characters = getFirstNames()
-    } else if (cur === "last") {
-      characters = getLastNames()
-    }
-    acc[cur] = picker(length, characters.join(""))
-    return acc
-  }, {} as Record<string, string>)
+  const firstNames = getFirstNames()
+  const lastNames = getLastNames()
+  const person = Array.from({ length }, () => {
+    const data: Record<string, string> = {}
+    keys.forEach((key) => {
+      if (key === "first") {
+        data[key] = firstNames[Math.floor(mt.random() * firstNames.length)]
+      } else if (key === "last") {
+        data[key] = lastNames[Math.floor(mt.random() * lastNames.length)]
+      }
+    })
+    return data
+  })
   return c.json(person)
 })
 
