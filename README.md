@@ -39,3 +39,8 @@ npm run deploy
     }
 }
 ```
+
+## Personal Data
+
+- First name was provided by [名前ランキング](https://www.meijiyasuda.co.jp/enjoy/ranking/index.html).
+- Last name was provided by [苗字由来net](https://myoji-yurai.net/).
