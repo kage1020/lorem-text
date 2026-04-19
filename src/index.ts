@@ -22,12 +22,12 @@ const mt = new MersenneTwister(new Date().getTime())
 
 function picker(
   length: number,
-  characters: string | { characters: string; ratio: number }[]
+  characters: string | { characters: string; ratio: number }[],
 ): string {
   if (typeof characters === "string") {
     return Array.from(
       { length },
-      () => characters[Math.floor(mt.random() * characters.length)]
+      () => characters[Math.floor(mt.random() * characters.length)],
     ).join("")
   }
   const pickedCharacters = Object.values(characters)
@@ -36,9 +36,9 @@ function picker(
         acc +
         Array.from(
           { length: Math.floor(cur.ratio * length) },
-          () => cur.characters[Math.floor(mt.random() * cur.characters.length)]
+          () => cur.characters[Math.floor(mt.random() * cur.characters.length)],
         ).join(""),
-      ""
+      "",
     )
     .split("")
     .sort(() => mt.random() - 0.5)
@@ -48,7 +48,7 @@ function picker(
       pickedCharacters +
       picker(
         length - pickedCharacters.length,
-        characters.reduce((acc, cur) => acc + cur.characters, "")
+        characters.reduce((acc, cur) => acc + cur.characters, ""),
       )
     )
   } else {
@@ -83,7 +83,9 @@ app.get("/", (c) => {
     kanji2: "/kanji2/:length",
     japanese: "/japanese/:length",
     lorem: "/lorem/:length",
+    "person-keys": "/person",
     person: "/person/:keys/:length",
+    "author-keys": "/author",
     author: "/:author/:length",
     rsaJwk: "/rsa/jwk",
     rsaPem: "/rsa/pem",
@@ -146,7 +148,7 @@ app.get("/alphaNumeric/:length", (c) => {
   const length = parseInt(c.req.param("length")) || 32
   const randomAlphaNumeric = picker(
     length,
-    ALPHABET_UPPER + ALPHABET_LOWER + NUMBER
+    ALPHABET_UPPER + ALPHABET_LOWER + NUMBER,
   )
   return c.text(randomAlphaNumeric)
 })
@@ -173,7 +175,7 @@ app.get("/alphaNumericSymbol/:length", (c) => {
   const length = parseInt(c.req.param("length")) || 32
   const randomAlphaNumericSymbol = picker(
     length,
-    ALPHABET_UPPER + ALPHABET_LOWER + NUMBER + SYMBOL
+    ALPHABET_UPPER + ALPHABET_LOWER + NUMBER + SYMBOL,
   )
   return c.text(randomAlphaNumericSymbol)
 })
@@ -182,7 +184,7 @@ app.get("/alphaNumericSymbolUpper/:length", (c) => {
   const length = parseInt(c.req.param("length")) || 32
   const randomAlphaNumericSymbolUpper = picker(
     length,
-    ALPHABET_UPPER + NUMBER + SYMBOL
+    ALPHABET_UPPER + NUMBER + SYMBOL,
   )
   return c.text(randomAlphaNumericSymbolUpper)
 })
@@ -191,7 +193,7 @@ app.get("/alphaNumericSymbolLower/:length", (c) => {
   const length = parseInt(c.req.param("length")) || 32
   const randomAlphaNumericSymbolLower = picker(
     length,
-    ALPHABET_LOWER + NUMBER + SYMBOL
+    ALPHABET_LOWER + NUMBER + SYMBOL,
   )
   return c.text(randomAlphaNumericSymbolLower)
 })
@@ -245,7 +247,7 @@ app.get("/rsa/jwk", async (c) => {
       hash: "SHA-512",
     },
     true,
-    ["encrypt", "decrypt"]
+    ["encrypt", "decrypt"],
   )) as CryptoKeyPair
   const publicKey = await crypto.subtle.exportKey("jwk", keyPair.publicKey)
   const privateKey = await crypto.subtle.exportKey("jwk", keyPair.privateKey)
@@ -261,18 +263,18 @@ app.get("/rsa/pem", async (c) => {
       hash: "SHA-512",
     },
     true,
-    ["encrypt", "decrypt"]
+    ["encrypt", "decrypt"],
   )) as CryptoKeyPair
   const publicKeyBuffer = (await crypto.subtle.exportKey(
     "spki",
-    keyPair.publicKey
+    keyPair.publicKey,
   )) as ArrayBuffer
   const publicKey = `-----BEGIN PUBLIC KEY-----
 ${btoa(String.fromCharCode(...new Uint8Array(publicKeyBuffer)))}
 -----END PUBLIC KEY-----`
   const privateKeyBuffer = (await crypto.subtle.exportKey(
     "pkcs8",
-    keyPair.privateKey
+    keyPair.privateKey,
   )) as ArrayBuffer
   const privateKey = `-----BEGIN PRIVATE KEY-----
 ${btoa(String.fromCharCode(...new Uint8Array(privateKeyBuffer)))}
@@ -280,8 +282,14 @@ ${btoa(String.fromCharCode(...new Uint8Array(privateKeyBuffer)))}
   return c.json({ publicKey, privateKey })
 })
 
+app.get("/person", (c) => {
+  return c.json({
+    keys: ["first", "last"],
+  })
+})
+
 app.get("/person/:keys/:length", (c) => {
-  const keys = c.req.param("keys").split("-")
+  const keys = c.req.param("keys").split(",")
   const length = parseInt(c.req.param("length")) || 100
   const firstNames = getFirstNames()
   const lastNames = getLastNames()
@@ -297,6 +305,12 @@ app.get("/person/:keys/:length", (c) => {
     return data
   })
   return c.json(person)
+})
+
+app.get("/author", (c) => {
+  return c.json({
+    authors: ["akutagawa", "dazai", "edogawa", "natsume"],
+  })
 })
 
 app.get("/:author/:length", async (c) => {

@@ -5,15 +5,15 @@
     "deploy": "wrangler deploy --minify"
   },
   "dependencies": {
-    "@paralleldrive/cuid2": "^2.2.2",
+    "@paralleldrive/cuid2": "^2.3.1",
     "cuid": "^3.0.0",
-    "hono": "^4.6.9",
-    "ulid": "^2.3.0",
-    "uuid": "^11.0.3"
+    "hono": "^4.12.14",
+    "ulid": "^2.4.0",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20241022.0",
-    "@types/node": "^22.10.1",
-    "wrangler": "^3.88.0"
+    "@cloudflare/workers-types": "^4.20260418.1",
+    "@types/node": "^22.19.17",
+    "wrangler": "^3.114.17"
   }
 }
