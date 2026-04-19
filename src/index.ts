@@ -19,7 +19,11 @@ import { getFirstNames, getLastNames } from "./person"
 import { pick } from "./picker"
 import { createRandom } from "./random"
 
-const random = createRandom()
+let cachedRandom: (() => number) | null = null
+const random: () => number = () => {
+  if (!cachedRandom) cachedRandom = createRandom()
+  return cachedRandom()
+}
 
 const app = new Hono()
 
