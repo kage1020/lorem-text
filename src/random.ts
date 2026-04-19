@@ -10,7 +10,7 @@ export class MersenneTwister {
 
   constructor(seed: number) {
     this.MT = new Array(MersenneTwister.N)
-    this.index = MersenneTwister.N + 1
+    this.index = MersenneTwister.N
     this.seed(seed)
   }
 
@@ -38,9 +38,6 @@ export class MersenneTwister {
 
   public randomInt(): number {
     if (this.index >= MersenneTwister.N) {
-      if (this.index > MersenneTwister.N) {
-        this.seed(5489)
-      }
       this.generateNumbers()
       this.index = 0
     }
@@ -57,4 +54,10 @@ export class MersenneTwister {
   public random(): number {
     return this.randomInt() / MersenneTwister.MAX_INT
   }
+}
+
+export function createRandom(seed?: number): () => number {
+  const actualSeed = seed ?? crypto.getRandomValues(new Uint32Array(1))[0]
+  const mt = new MersenneTwister(actualSeed)
+  return () => mt.random()
 }

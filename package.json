@@ -2,7 +2,10 @@
   "name": "lorem-text",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy --minify"
+    "deploy": "wrangler deploy --minify",
+    "test": "vitest run",
+    "lint": "biome check",
+    "format": "biome format --write"
   },
   "dependencies": {
     "@paralleldrive/cuid2": "^2.3.1",
@@ -12,8 +15,10 @@
     "uuid": "^11.1.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.12",
     "@cloudflare/workers-types": "^4.20260418.1",
     "@types/node": "^22.19.17",
+    "vitest": "^4.1.4",
     "wrangler": "^3.114.17"
   }
 }

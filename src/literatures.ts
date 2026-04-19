@@ -3,6 +3,7 @@ import dazai from "./data/dazai.json"
 import edogawa from "./data/edogawa.json"
 import lorem from "./data/lorem.json"
 import natsume from "./data/natsume.json"
+import { shuffle } from "./shuffle"
 
 export async function getLiteratureText(author: string, random = Math.random) {
   const segmenter = new Intl.Segmenter("ja", { granularity: "sentence" })
@@ -26,7 +27,7 @@ export async function getLiteratureText(author: string, random = Math.random) {
   }
   const segments = segmenter.segment(text)
   const sentences = Array.from(segments, (segment) => segment.segment)
-  return sentences.sort(() => random() - 0.5).join("")
+  return shuffle(sentences, random).join("")
 }
 
 export async function getLoremText(random = Math.random) {
@@ -34,5 +35,5 @@ export async function getLoremText(random = Math.random) {
   const text = Object.values(lorem).join("")
   const segments = segmenter.segment(text)
   const sentences = Array.from(segments, (segment) => segment.segment)
-  return sentences.sort(() => random() - 0.5).join("")
+  return shuffle(sentences, random).join("")
 }
