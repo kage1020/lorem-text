@@ -1,7 +1,7 @@
+import { randomBytes } from "node:crypto"
 import { createId as cuid2 } from "@paralleldrive/cuid2"
 import cuid from "cuid"
 import { Hono } from "hono"
-import { randomBytes } from "node:crypto"
 import { ulid } from "ulid"
 import { v4, v7 } from "uuid"
 import {
@@ -16,45 +16,10 @@ import {
 } from "./const"
 import { getLiteratureText, getLoremText } from "./literatures"
 import { getFirstNames, getLastNames } from "./person"
-import { MersenneTwister } from "./random"
+import { pick } from "./picker"
+import { createRandom } from "./random"
 
-const mt = new MersenneTwister(new Date().getTime())
-
-function picker(
-  length: number,
-  characters: string | { characters: string; ratio: number }[],
-): string {
-  if (typeof characters === "string") {
-    return Array.from(
-      { length },
-      () => characters[Math.floor(mt.random() * characters.length)],
-    ).join("")
-  }
-  const pickedCharacters = Object.values(characters)
-    .reduce(
-      (acc, cur) =>
-        acc +
-        Array.from(
-          { length: Math.floor(cur.ratio * length) },
-          () => cur.characters[Math.floor(mt.random() * cur.characters.length)],
-        ).join(""),
-      "",
-    )
-    .split("")
-    .sort(() => mt.random() - 0.5)
-    .join("")
-  if (pickedCharacters.length < length) {
-    return (
-      pickedCharacters +
-      picker(
-        length - pickedCharacters.length,
-        characters.reduce((acc, cur) => acc + cur.characters, ""),
-      )
-    )
-  } else {
-    return pickedCharacters
-  }
-}
+const random = createRandom()
 
 const app = new Hono()
 
@@ -113,7 +78,7 @@ app.get("/ulid", (c) => {
 })
 
 app.get("/hex/:length", async (c) => {
-  const length = parseInt(c.req.param("length")) || 32
+  const length = parseInt(c.req.param("length"), 10) || 32
   const randomHex = randomBytes(Math.ceil(length / 2))
     .toString("hex")
     .slice(0, length)
@@ -121,120 +86,100 @@ app.get("/hex/:length", async (c) => {
 })
 
 app.get("/number/:length", (c) => {
-  const length = parseInt(c.req.param("length")) || 32
-  const randomNumber = picker(length, NUMBER)
-  return c.text(randomNumber)
+  const length = parseInt(c.req.param("length"), 10) || 32
+  return c.text(pick(length, NUMBER, random))
 })
 
 app.get("/alphabet/:length", (c) => {
-  const length = parseInt(c.req.param("length")) || 32
-  const randomAlphabet = picker(length, ALPHABET_UPPER + ALPHABET_LOWER)
-  return c.text(randomAlphabet)
+  const length = parseInt(c.req.param("length"), 10) || 32
+  return c.text(pick(length, ALPHABET_UPPER + ALPHABET_LOWER, random))
 })
 
 app.get("/alphaUpper/:length", (c) => {
-  const length = parseInt(c.req.param("length")) || 32
-  const randomAlphaUpper = picker(length, ALPHABET_UPPER)
-  return c.text(randomAlphaUpper)
+  const length = parseInt(c.req.param("length"), 10) || 32
+  return c.text(pick(length, ALPHABET_UPPER, random))
 })
 
 app.get("/alphaLower/:length", (c) => {
-  const length = parseInt(c.req.param("length")) || 32
-  const randomAlphaLower = picker(length, ALPHABET_LOWER)
-  return c.text(randomAlphaLower)
+  const length = parseInt(c.req.param("length"), 10) || 32
+  return c.text(pick(length, ALPHABET_LOWER, random))
 })
 
 app.get("/alphaNumeric/:length", (c) => {
-  const length = parseInt(c.req.param("length")) || 32
-  const randomAlphaNumeric = picker(
-    length,
-    ALPHABET_UPPER + ALPHABET_LOWER + NUMBER,
-  )
-  return c.text(randomAlphaNumeric)
+  const length = parseInt(c.req.param("length"), 10) || 32
+  return c.text(pick(length, ALPHABET_UPPER + ALPHABET_LOWER + NUMBER, random))
 })
 
 app.get("/alphaNumericUpper/:length", (c) => {
-  const length = parseInt(c.req.param("length")) || 32
-  const randomAlphanumericUpper = picker(length, ALPHABET_UPPER + NUMBER)
-  return c.text(randomAlphanumericUpper)
+  const length = parseInt(c.req.param("length"), 10) || 32
+  return c.text(pick(length, ALPHABET_UPPER + NUMBER, random))
 })
 
 app.get("/alphaNumericLower/:length", (c) => {
-  const length = parseInt(c.req.param("length")) || 32
-  const randomAlphaNumericLower = picker(length, ALPHABET_LOWER + NUMBER)
-  return c.text(randomAlphaNumericLower)
+  const length = parseInt(c.req.param("length"), 10) || 32
+  return c.text(pick(length, ALPHABET_LOWER + NUMBER, random))
 })
 
 app.get("/symbol/:length", (c) => {
-  const length = parseInt(c.req.param("length")) || 32
-  const randomSymbol = picker(length, SYMBOL)
-  return c.text(randomSymbol)
+  const length = parseInt(c.req.param("length"), 10) || 32
+  return c.text(pick(length, SYMBOL, random))
 })
 
 app.get("/alphaNumericSymbol/:length", (c) => {
-  const length = parseInt(c.req.param("length")) || 32
-  const randomAlphaNumericSymbol = picker(
-    length,
-    ALPHABET_UPPER + ALPHABET_LOWER + NUMBER + SYMBOL,
+  const length = parseInt(c.req.param("length"), 10) || 32
+  return c.text(
+    pick(length, ALPHABET_UPPER + ALPHABET_LOWER + NUMBER + SYMBOL, random),
   )
-  return c.text(randomAlphaNumericSymbol)
 })
 
 app.get("/alphaNumericSymbolUpper/:length", (c) => {
-  const length = parseInt(c.req.param("length")) || 32
-  const randomAlphaNumericSymbolUpper = picker(
-    length,
-    ALPHABET_UPPER + NUMBER + SYMBOL,
-  )
-  return c.text(randomAlphaNumericSymbolUpper)
+  const length = parseInt(c.req.param("length"), 10) || 32
+  return c.text(pick(length, ALPHABET_UPPER + NUMBER + SYMBOL, random))
 })
 
 app.get("/alphaNumericSymbolLower/:length", (c) => {
-  const length = parseInt(c.req.param("length")) || 32
-  const randomAlphaNumericSymbolLower = picker(
-    length,
-    ALPHABET_LOWER + NUMBER + SYMBOL,
-  )
-  return c.text(randomAlphaNumericSymbolLower)
+  const length = parseInt(c.req.param("length"), 10) || 32
+  return c.text(pick(length, ALPHABET_LOWER + NUMBER + SYMBOL, random))
 })
 
 app.get("/hiragana/:length", (c) => {
-  const length = parseInt(c.req.param("length")) || 100
-  const randomHiragana = picker(length, HIRAGANA)
-  return c.text(randomHiragana)
+  const length = parseInt(c.req.param("length"), 10) || 100
+  return c.text(pick(length, HIRAGANA, random))
 })
 
 app.get("/katakana/:length", (c) => {
-  const length = parseInt(c.req.param("length")) || 100
-  const randomKatakana = picker(length, KATAKANA)
-  return c.text(randomKatakana)
+  const length = parseInt(c.req.param("length"), 10) || 100
+  return c.text(pick(length, KATAKANA, random))
 })
 
 app.get("/kanji/:length", (c) => {
-  const length = parseInt(c.req.param("length")) || 100
-  const randomKanji = picker(length, KANJI1)
-  return c.text(randomKanji)
+  const length = parseInt(c.req.param("length"), 10) || 100
+  return c.text(pick(length, KANJI1, random))
 })
 
 app.get("/kanji2/:length", (c) => {
-  const length = parseInt(c.req.param("length")) || 100
-  const randomKanji = picker(length, KANJI2)
-  return c.text(randomKanji)
+  const length = parseInt(c.req.param("length"), 10) || 100
+  return c.text(pick(length, KANJI2, random))
 })
 
 app.get("/japanese/:length", (c) => {
-  const length = parseInt(c.req.param("length")) || 100
-  const randomJapanese = picker(length, [
-    { characters: HIRAGANA, ratio: 0.3 },
-    { characters: KATAKANA, ratio: 0.3 },
-    { characters: KANJI1, ratio: 0.4 },
-  ])
-  return c.text(randomJapanese)
+  const length = parseInt(c.req.param("length"), 10) || 100
+  return c.text(
+    pick(
+      length,
+      [
+        { characters: HIRAGANA, ratio: 0.3 },
+        { characters: KATAKANA, ratio: 0.3 },
+        { characters: KANJI1, ratio: 0.4 },
+      ],
+      random,
+    ),
+  )
 })
 
 app.get("/lorem/:length", async (c) => {
-  const length = parseInt(c.req.param("length")) || 100
-  const text = await getLoremText(() => mt.random())
+  const length = parseInt(c.req.param("length"), 10) || 100
+  const text = await getLoremText(random)
   return c.text(text.slice(0, length))
 })
 
@@ -290,16 +235,16 @@ app.get("/person", (c) => {
 
 app.get("/person/:keys/:length", (c) => {
   const keys = c.req.param("keys").split(",")
-  const length = parseInt(c.req.param("length")) || 100
+  const length = parseInt(c.req.param("length"), 10) || 100
   const firstNames = getFirstNames()
   const lastNames = getLastNames()
   const person = Array.from({ length }, () => {
     const data: Record<string, string> = {}
     keys.forEach((key) => {
       if (key === "first") {
-        data[key] = firstNames[Math.floor(mt.random() * firstNames.length)]
+        data[key] = firstNames[Math.floor(random() * firstNames.length)]
       } else if (key === "last") {
-        data[key] = lastNames[Math.floor(mt.random() * lastNames.length)]
+        data[key] = lastNames[Math.floor(random() * lastNames.length)]
       }
     })
     return data
@@ -314,9 +259,9 @@ app.get("/author", (c) => {
 })
 
 app.get("/:author/:length", async (c) => {
-  const length = parseInt(c.req.param("length")) || 100
+  const length = parseInt(c.req.param("length"), 10) || 100
   const author = c.req.param("author")
-  const text = await getLiteratureText(author, () => mt.random())
+  const text = await getLiteratureText(author, random)
   return c.text(text.slice(0, length))
 })
 
