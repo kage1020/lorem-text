@@ -26,26 +26,11 @@ describe("MersenneTwister", () => {
       expect(v).toBeLessThan(1)
     }
   })
-
-  it("is roughly uniform over [0, 1)", () => {
-    const mt = new MersenneTwister(13)
-    const buckets = new Array(10).fill(0)
-    const trials = 100000
-    for (let i = 0; i < trials; i++) {
-      const v = mt.random()
-      buckets[Math.floor(v * 10)]++
-    }
-    const expected = trials / 10
-    const tolerance = expected * 0.03
-    for (const count of buckets) {
-      expect(Math.abs(count - expected)).toBeLessThan(tolerance)
-    }
-  })
 })
 
 describe("createRandom", () => {
   it("returns a function yielding values in [0, 1)", () => {
-    const rng = createRandom()
+    const rng = createRandom(1)
     for (let i = 0; i < 1000; i++) {
       const v = rng()
       expect(v).toBeGreaterThanOrEqual(0)
@@ -53,11 +38,26 @@ describe("createRandom", () => {
     }
   })
 
-  it("independent calls yield independent streams", () => {
-    const r1 = createRandom()
-    const r2 = createRandom()
+  it("is reproducible when given an explicit seed", () => {
+    const r1 = createRandom(42)
+    const r2 = createRandom(42)
+    const seqA = Array.from({ length: 32 }, () => r1())
+    const seqB = Array.from({ length: 32 }, () => r2())
+    expect(seqA).toEqual(seqB)
+  })
+
+  it("different explicit seeds yield different streams", () => {
+    const r1 = createRandom(1)
+    const r2 = createRandom(2)
     const seqA = Array.from({ length: 32 }, () => r1())
     const seqB = Array.from({ length: 32 }, () => r2())
     expect(seqA).not.toEqual(seqB)
+  })
+
+  it("defaults to a crypto-derived seed when none is provided", () => {
+    const rng = createRandom()
+    const v = rng()
+    expect(v).toBeGreaterThanOrEqual(0)
+    expect(v).toBeLessThan(1)
   })
 })

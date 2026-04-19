@@ -56,8 +56,8 @@ export class MersenneTwister {
   }
 }
 
-export function createRandom(): () => number {
-  const seed = crypto.getRandomValues(new Uint32Array(1))[0]
-  const mt = new MersenneTwister(seed)
+export function createRandom(seed?: number): () => number {
+  const actualSeed = seed ?? crypto.getRandomValues(new Uint32Array(1))[0]
+  const mt = new MersenneTwister(actualSeed)
   return () => mt.random()
 }
