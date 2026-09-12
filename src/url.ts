@@ -1,4 +1,4 @@
-import { URL_PORTS, URL_PROTOCOLS, URL_SUBDOMAINS, URL_TLDS } from "./const"
+import { URL_PORTS, URL_SUBDOMAINS, URL_TLDS } from "./const"
 import lorem from "./data/lorem.json"
 
 const SUBDOMAIN_RATE = 0.4
@@ -53,6 +53,5 @@ function buildFragment(random: () => number): string {
 }
 
 export function generateUrl(random: () => number): string {
-  const protocol = choice(URL_PROTOCOLS, random)
-  return `${protocol}://${buildHost(random)}${buildPath(random)}${buildQuery(random)}${buildFragment(random)}`
+  return `https://${buildHost(random)}${buildPath(random)}${buildQuery(random)}${buildFragment(random)}`
 }

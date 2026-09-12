@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { URL_PORTS, URL_PROTOCOLS, URL_TLDS } from "./const"
+import { URL_PORTS, URL_TLDS } from "./const"
 import { MersenneTwister } from "./random"
 import { generateUrl } from "./url"
 
@@ -20,9 +20,9 @@ describe("generateUrl", () => {
     expect(() => new URL(generateUrl(() => mt.random()))).not.toThrow()
   })
 
-  it("uses a known protocol", () => {
+  it("always uses https", () => {
     for (const url of generateMany(2, 50)) {
-      expect(URL_PROTOCOLS).toContain(url.protocol.replace(":", ""))
+      expect(url.protocol).toBe("https:")
     }
   })
 
