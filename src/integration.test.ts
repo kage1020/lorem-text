@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import app from "./index"
 import { getLiteratureText, getLoremText } from "./literatures"
 import { MersenneTwister } from "./random"
 import { shuffle } from "./shuffle"
@@ -49,5 +50,40 @@ describe("literature shuffling", () => {
       firsts.add(text.slice(0, 20))
     }
     expect(firsts.size).toBeGreaterThan(10)
+  })
+})
+
+describe("url endpoints", () => {
+  it("returns a single url as plain text", async () => {
+    const res = await app.request("/url")
+    expect(res.status).toBe(200)
+    const text = await res.text()
+    expect(() => new URL(text)).not.toThrow()
+  })
+
+  it("returns the requested number of urls as json", async () => {
+    const res = await app.request("/url/3")
+    expect(res.status).toBe(200)
+    const urls = (await res.json()) as string[]
+    expect(urls).toHaveLength(3)
+    for (const url of urls) expect(() => new URL(url)).not.toThrow()
+  })
+
+  it("falls back to the default count for a non numeric count", async () => {
+    const res = await app.request("/url/abc")
+    const urls = (await res.json()) as string[]
+    expect(urls).toHaveLength(100)
+  })
+
+  it("is not shadowed by the literature catch-all route", async () => {
+    const res = await app.request("/url/5")
+    expect(res.headers.get("content-type")).toContain("application/json")
+  })
+
+  it("is listed on the index route", async () => {
+    const res = await app.request("/")
+    const routes = (await res.json()) as Record<string, string>
+    expect(routes.url).toBe("/url")
+    expect(routes.urls).toBe("/url/:count")
   })
 })

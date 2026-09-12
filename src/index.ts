@@ -18,6 +18,7 @@ import { getLiteratureText, getLoremText } from "./literatures"
 import { getFirstNames, getLastNames } from "./person"
 import { pick } from "./picker"
 import { createRandom } from "./random"
+import { generateUrl } from "./url"
 
 let cachedRandom: (() => number) | null = null
 const random: () => number = () => {
@@ -52,6 +53,8 @@ app.get("/", (c) => {
     kanji2: "/kanji2/:length",
     japanese: "/japanese/:length",
     lorem: "/lorem/:length",
+    url: "/url",
+    urls: "/url/:count",
     "person-keys": "/person",
     person: "/person/:keys/:length",
     "author-keys": "/author",
@@ -185,6 +188,15 @@ app.get("/lorem/:length", async (c) => {
   const length = parseInt(c.req.param("length"), 10) || 100
   const text = await getLoremText(random)
   return c.text(text.slice(0, length))
+})
+
+app.get("/url", (c) => {
+  return c.text(generateUrl(random))
+})
+
+app.get("/url/:count", (c) => {
+  const count = parseInt(c.req.param("count"), 10) || 100
+  return c.json(Array.from({ length: count }, () => generateUrl(random)))
 })
 
 app.get("/rsa/jwk", async (c) => {
