@@ -87,3 +87,54 @@ describe("url endpoints", () => {
     expect(routes.urls).toBe("/url/:count")
   })
 })
+
+describe("base64 endpoints", () => {
+  const BASE64_PATTERN = /^[A-Za-z0-9+/]*={0,2}$/
+  const BASE64URL_PATTERN = /^[A-Za-z0-9_-]*$/
+
+  it("returns standard base64 encoding the requested number of bytes", async () => {
+    const res = await app.request("/base64/16")
+    expect(res.status).toBe(200)
+    expect(res.headers.get("content-type")).toContain("text/plain")
+    const text = await res.text()
+    expect(text).toMatch(BASE64_PATTERN)
+    expect(text).toHaveLength(24)
+    expect(Buffer.from(text, "base64")).toHaveLength(16)
+  })
+
+  it("pads standard base64 when the byte count is not a multiple of 3", async () => {
+    const res = await app.request("/base64/1")
+    const text = await res.text()
+    expect(text).toMatch(/^[A-Za-z0-9+/]{2}==$/)
+  })
+
+  it("returns unpadded url-safe base64 encoding the requested number of bytes", async () => {
+    const res = await app.request("/base64url/16")
+    expect(res.status).toBe(200)
+    expect(res.headers.get("content-type")).toContain("text/plain")
+    const text = await res.text()
+    expect(text).toMatch(BASE64URL_PATTERN)
+    expect(text).toHaveLength(22)
+    expect(Buffer.from(text, "base64url")).toHaveLength(16)
+  })
+
+  it("falls back to 32 bytes for a non numeric length", async () => {
+    const standard = await (await app.request("/base64/abc")).text()
+    const urlSafe = await (await app.request("/base64url/abc")).text()
+    expect(Buffer.from(standard, "base64")).toHaveLength(32)
+    expect(Buffer.from(urlSafe, "base64url")).toHaveLength(32)
+  })
+
+  it("returns different values on each request", async () => {
+    const a = await (await app.request("/base64/32")).text()
+    const b = await (await app.request("/base64/32")).text()
+    expect(a).not.toBe(b)
+  })
+
+  it("is listed on the index route", async () => {
+    const res = await app.request("/")
+    const routes = (await res.json()) as Record<string, string>
+    expect(routes.base64).toBe("/base64/:length")
+    expect(routes.base64url).toBe("/base64url/:length")
+  })
+})

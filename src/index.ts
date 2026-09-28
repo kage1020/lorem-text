@@ -36,6 +36,8 @@ app.get("/", (c) => {
     uuidV7: "/uuidv7",
     ulid: "/ulid",
     hex: "/hex/:length",
+    base64: "/base64/:length",
+    base64url: "/base64url/:length",
     number: "/number/:length",
     alphabet: "/alphabet/:length",
     alphaUpper: "/alphaUpper/:length",
@@ -90,6 +92,16 @@ app.get("/hex/:length", async (c) => {
     .toString("hex")
     .slice(0, length)
   return c.text(randomHex)
+})
+
+app.get("/base64/:length", (c) => {
+  const byteLength = parseInt(c.req.param("length"), 10) || 32
+  return c.text(randomBytes(byteLength).toString("base64"))
+})
+
+app.get("/base64url/:length", (c) => {
+  const byteLength = parseInt(c.req.param("length"), 10) || 32
+  return c.text(randomBytes(byteLength).toString("base64url"))
 })
 
 app.get("/number/:length", (c) => {
